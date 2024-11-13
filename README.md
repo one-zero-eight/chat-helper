@@ -16,7 +16,7 @@ Simplest bot for removing join/left notifications in Telegram chats. Built with 
 
 ## Prerequisites
 
-- Python 3.9 or newer
+- Python 3.12 or newer
 - Docker and Docker Compose (for Docker deployment)
 - A Dokku server (for Dokku deployment)
 
@@ -26,8 +26,8 @@ Simplest bot for removing join/left notifications in Telegram chats. Built with 
 
 1. Clone this repository:
 
-`git clone https://github.com/IgorDuino/inno-chat-cleaner.git`
-`cd inno-chat-cleaner`
+`git clone https://github.com/one-zero-eight/chat-helper.git`
+`cd chat-helper`
 
 2. Create a `.env` file in the root directory with your Telegram bot token:
 
