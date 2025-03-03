@@ -28,6 +28,13 @@ logging.basicConfig(level=logging.INFO)
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
+image_generation_text = """Для генерации персонализированной аватарки отправьте сообщение:
+<pre><code>\
+/set_image
+<i>Заголовок</i>
+<i>Подзаголовок (опционально)</i>
+<i>Цвет в формате hex (опционально)</i>\
+</code></pre>"""
 
 
 async def on_startup():
@@ -54,52 +61,51 @@ def _get_avatar_bytes(title: str, subtitle: str | None, color: tuple[int, int, i
 @dp.message(Command("set_image"))
 async def handle_set_image(message: types.Message, command: CommandObject):
     chat_member = await bot.get_chat_member(message.chat.id, message.from_user.id)
-    if chat_member.status == ChatMemberStatus.ADMINISTRATOR or chat_member.status == ChatMemberStatus.CREATOR:
+    if message.chat.id == message.from_user.id and not command.args:
+        await message.answer(image_generation_text, reply_to_message_id=message.message_id, parse_mode="HTML")
+        return
+    if (message.chat.id == message.from_user.id or
+            chat_member.status == ChatMemberStatus.ADMINISTRATOR or chat_member.status == ChatMemberStatus.CREATOR):
         if command.args and len(command.args.splitlines()):
             splitted = command.args.splitlines()
             title, subtitle, color, *_ = (splitted + [None, None, None])[:3]
         else:
-            title, subtitle, color = get_course_name(message.chat.full_name), get_semester(message.chat.full_name), None
+            title, subtitle, color = get_course_name(message.chat.full_name), get_semester(
+                message.chat.full_name), None
 
         if color is not None:
             color = color.lstrip("#")
             rgb = int(color[0:2], 16), int(color[2:4], 16), int(color[4:6], 16)
         else:
             rgb = pick_stable_random(title)
-        caption = f"""
-Текущие параметры:
+        caption = f"""Текущие параметры:\
 <blockquote>\
 <b>{title}</b>
 {subtitle or ""}
 #{rgb[0]:02x}{rgb[1]:02x}{rgb[2]:02x}\
-</blockquote>
+</blockquote>\n
+{image_generation_text}"""
 
-Для генерации другой аватарки отправьте сообщение:
-<pre><code>\
-/set_image
-<i>Заголовок</i>
-<i>Подзаголовок (опционально)</i>
-<i>Цвет в формате hex (опционально)</i>\
-</code></pre>"""
         avatar_bytes = _get_avatar_bytes(title, subtitle, rgb)
+
+        buttons = []
+        if not message.chat.id == message.from_user.id:
+            buttons.extend([InlineKeyboardButton(
+                text="Задать как аватар чата",
+                callback_data=SetPhotoCallbackData().pack(),
+            ),
+                InlineKeyboardButton(
+                    text="Удалить это сообщение",
+                    callback_data=DeleteCallbackData().pack(),
+                )
+            ])
 
         await message.reply_photo(
             BufferedInputFile(avatar_bytes, "avatar.jpeg"),
             caption=caption,
             parse_mode="HTML",
             reply_markup=InlineKeyboardMarkup(
-                inline_keyboard=[
-                    [
-                        InlineKeyboardButton(
-                            text="Задать как аватар чата",
-                            callback_data=SetPhotoCallbackData().pack(),
-                        ),
-                        InlineKeyboardButton(
-                            text="Удалить это сообщение",
-                            callback_data=DeleteCallbackData().pack(),
-                        ),
-                    ]
-                ]
+                inline_keyboard=[buttons]
             ),
         )
     else:
@@ -185,9 +191,9 @@ async def handle(message: types.Message):
             )
 
     if (
-        message.left_chat_member is not None
-        or message.new_chat_members is not None
-        or message.new_chat_photo is not None
+            message.left_chat_member is not None
+            or message.new_chat_members is not None
+            or message.new_chat_photo is not None
     ):
         try:
             await message.delete()
