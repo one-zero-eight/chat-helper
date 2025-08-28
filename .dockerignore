@@ -1,0 +1,11 @@
+# Ignore everything
+*
+
+# Except code
+!/src/
+!/pyproject.toml
+!/uv.lock
+!/static/
+
+# And ignore cache files in the code
+__pycache__

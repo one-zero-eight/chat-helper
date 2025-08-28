@@ -1,12 +1,41 @@
-FROM python:3.12-slim
+###########################################################
+# Builder stage. Build dependencies.
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS builder
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_PYTHON_DOWNLOADS=0
 
-WORKDIR /usr/src/app
+WORKDIR /app
+COPY ./pyproject.toml ./uv.lock ./
 
-COPY pyproject.toml poetry.lock ./
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-install-project --no-dev
 
-RUN pip install poetry && poetry config virtualenvs.create false && poetry install --no-root
 
-COPY static static
-COPY src src
+###########################################################
+# Production stage. Copy only runtime deps that were installed in the Builder stage.
+FROM python:3.12-slim-bookworm AS production
+
+ENV PYTHONUNBUFFERED=1
+
+# Copy the applicant from the builder
+COPY --from=builder /app /app
+
+# Create user with the name uv
+RUN groupadd -g 1500 uv && \
+    useradd -m -u 1500 -g uv uv
+
+# Ensure /app/data directory exists and is writable
+RUN mkdir -p /app/data && chown -R uv:uv /app/data
+
+USER uv
+WORKDIR /app
+
+# Place executables in the environment at the front of the path
+ENV PATH="/app/.venv/bin:$PATH"
+
+COPY --chown=uv:uv . /app
 
 CMD ["python", "-m", "src.bot"]

@@ -1,6 +1,5 @@
 services:
   bot:
     build: .
-    restart: always
     environment:
       TELEGRAM_API_TOKEN: $TELEGRAM_API_TOKEN

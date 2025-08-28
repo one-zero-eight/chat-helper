@@ -1,15 +1,24 @@
 import numpy as np
-from PIL import Image, ImageDraw, ImageFont
+import PIL.Image
+import PIL.ImageDraw
+import PIL.ImageFont
 
-LOGO_IMG = np.array(Image.open("static/logo.png"))
-font_big = ImageFont.truetype("static/Rubik-Bold.ttf", 124)
-font_small = ImageFont.truetype("static/Rubik-Bold.ttf", 74)
+LOGO_IMG = np.array(PIL.Image.open("static/logo.png"))
+font_big: PIL.ImageFont.FreeTypeFont = PIL.ImageFont.truetype("static/Rubik-Bold.ttf", 124)
+font_small: PIL.ImageFont.FreeTypeFont = PIL.ImageFont.truetype("static/Rubik-Bold.ttf", 74)
 
 
-def print_text(img: Image, pos: tuple[int, int], text: str, font: ImageFont, max_width: int, max_height: int) -> Image:
+def print_text(
+    img: PIL.Image.Image,
+    pos: tuple[int, int],
+    text: str,
+    font: PIL.ImageFont.FreeTypeFont,
+    max_width: int,
+    max_height: int,
+) -> PIL.Image.Image:
     font_size = font.size
-    draw = ImageDraw.Draw(img)
-    current_font = ImageFont.truetype(font.path, font_size)
+    draw = PIL.ImageDraw.Draw(img)
+    current_font = PIL.ImageFont.truetype(font.path, font_size)
 
     # Wrap text to fit within max_width and max_height
     wrapped_text = text
@@ -55,12 +64,12 @@ def print_text(img: Image, pos: tuple[int, int], text: str, font: ImageFont, max
         else:
             # Reduce font size if text block is too tall
             font_size -= 1
-            current_font = ImageFont.truetype(font.path, font_size)
+            current_font = PIL.ImageFont.truetype(font.path, font_size)
 
     return img
 
 
-def generate_avatar(title: str, subtitle: str | None, color: tuple[int, int, int]) -> Image:
+def generate_avatar(title: str, subtitle: str | None, color: tuple[int, int, int]) -> PIL.Image.Image:
     img = np.zeros((640, 640, 3), np.uint32) + np.array(color)
 
     h = LOGO_IMG.shape[0]
@@ -72,7 +81,7 @@ def generate_avatar(title: str, subtitle: str | None, color: tuple[int, int, int
 
     img = img.clip(0, 255).astype(np.uint8)
 
-    img = Image.fromarray(img)
+    img = PIL.Image.fromarray(img)
     max_width = 600
     max_height = 300
     if subtitle is not None:
