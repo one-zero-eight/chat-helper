@@ -72,6 +72,7 @@ cases_course_groups = [
     ),
     ("[F22] Introduction to Programming", "Introduction to Programming"),
     ("[F22] Logic and Discrete Mathematics", "Logic and Discrete Mathematics"),
+    ("[F25] Аналитическая геометрия и линейная алгебра", "Аналитическая геометрия и линейная алгебра"),
 ]
 
 
