@@ -1,6 +1,6 @@
 ###########################################################
 # Builder stage. Build dependencies.
-FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS builder
+FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim AS builder
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     UV_COMPILE_BYTECODE=1 \
@@ -16,7 +16,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 ###########################################################
 # Production stage. Copy only runtime deps that were installed in the Builder stage.
-FROM python:3.12-slim-bookworm AS production
+FROM python:3.13-slim-bookworm AS production
 
 ENV PYTHONUNBUFFERED=1
 
@@ -26,9 +26,6 @@ COPY --from=builder /app /app
 # Create user with the name uv
 RUN groupadd -g 1500 uv && \
     useradd -m -u 1500 -g uv uv
-
-# Ensure /app/data directory exists and is writable
-RUN mkdir -p /app/data && chown -R uv:uv /app/data
 
 USER uv
 WORKDIR /app

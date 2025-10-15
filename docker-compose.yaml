@@ -1,5 +1,11 @@
+# This is a Docker Compose configuration for local use.
+
+# Run all services:
+# docker compose up --build --wait
+
 services:
   bot:
     build: .
+    restart: no
     environment:
       TELEGRAM_API_TOKEN: $TELEGRAM_API_TOKEN

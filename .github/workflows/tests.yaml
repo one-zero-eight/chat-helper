@@ -1,0 +1,24 @@
+name: Run tests
+
+on: [ push, pull_request ]
+
+jobs:
+  test:
+    name: Run pytest
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v7
+      with:
+        enable-cache: true
+        activate-environment: true
+
+    - name: Install the project
+      run: uv sync
+
+    - name: Run tests
+      run: uv run pytest tests

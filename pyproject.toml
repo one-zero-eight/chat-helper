@@ -2,11 +2,15 @@
 name = "chat-helper"
 version = "0.1.0"
 description = ""
-requires-python = "~=3.12"
+authors = [{ name = "one-zero-eight" }]
+urls = { homepage = "https://t.me/one_zero_eight" }
+readme = "README.md"
+requires-python = ">=3.13,<3.14"
+
 dependencies = [
-    "aiogram>=3.14.0,<4",
-    "numpy>=2.1.3,<3",
-    "pillow>=11.0.0,<12",
+    "aiogram>=3.14.0",
+    "numpy>=2.1.3",
+    "pillow>=11.0.0",
 ]
 
 [dependency-groups]
@@ -18,12 +22,6 @@ dev = [
 
 [tool.ruff]
 line-length = 120
-lint.ignore = [
-    # wildcard imports are fine
-    "F403",
-    "F405",
-    "PLR",
-]
 lint.extend-select = ["I", "UP", "PL"]
-lint.extend-ignore = ["PLC0415"]
-target-version = "py312"
+lint.extend-ignore = ["PLC0415", "PLR"]
+target-version = "py313"
