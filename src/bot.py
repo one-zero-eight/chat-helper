@@ -258,8 +258,7 @@ async def handle_bot_added_to_chat(message: types.Message):
     bot_chat_member = await bot.get_chat_member(message.chat.id, bot.id)
     if bot_chat_member.status != ChatMemberStatus.ADMINISTRATOR:
         text += (
-            "Пожалуйста, назначьте меня администратором, чтобы я мог удалять уведомления о входе и выходе "
-            "участников."
+            "Пожалуйста, назначьте меня администратором, чтобы я мог удалять уведомления о входе и выходе участников."
         )
     else:
         text += "✅ Я администратор, для дальнейшей работы всё уже настроено."
