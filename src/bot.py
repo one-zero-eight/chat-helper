@@ -5,6 +5,7 @@ import re
 from io import BytesIO
 
 from aiogram import Bot, Dispatcher, F, types
+from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.enums import ChatMemberStatus
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.filters import Command, CommandObject
@@ -24,6 +25,7 @@ from src.color import pick_stable_random
 from src.parse_chat_name import get_course_name, get_semester
 
 API_TOKEN = os.getenv("TELEGRAM_API_TOKEN")
+PROXY_URL = os.getenv("TELEGRAM_PROXY_URL")
 
 if not API_TOKEN:
     raise ValueError("TELEGRAM_API_TOKEN is not set")
@@ -31,7 +33,13 @@ if not API_TOKEN:
 
 logging.basicConfig(level=logging.INFO)
 
-bot = Bot(token=API_TOKEN)
+if PROXY_URL:
+    logging.info("Using proxy")
+    session = AiohttpSession(proxy=PROXY_URL)
+else:
+    session = None
+
+bot = Bot(token=API_TOKEN, session=session)
 dp = Dispatcher()
 image_generation_text = """Для генерации персонализированной аватарки отправьте сообщение:
 <pre><code>\
