@@ -9,3 +9,10 @@ services:
     restart: no
     environment:
       TELEGRAM_API_TOKEN: $TELEGRAM_API_TOKEN
+    deploy:
+      # Change limits if project needs more RAM, though try to stay within limits
+      resources:
+        limits:
+          memory: 1g
+        reservations:
+          memory: 500m
